@@ -72,6 +72,8 @@ func New(code Code, secret []byte) *Packet {
 	return packet
 }
 
+type ParseFunc func (data, secret []byte, dictionary *Dictionary) (*Packet, error)
+
 // Parse parses a RADIUS packet from wire data, using the given shared secret
 // and dictionary. nil and an error is returned if there is a problem parsing
 // the packet.

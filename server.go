@@ -200,6 +200,7 @@ type Server struct {
 
 	// Listener
 	listener *net.UDPConn
+	PacketParser ParseFunc
 }
 
 // Parse clients map
@@ -261,7 +262,7 @@ func (s *Server) processPacket(buff []byte, remoteAddr *net.UDPAddr) {
 		}
 	}
 
-	if packet, err = Parse(buff, secret, s.Dictionary); err != nil {
+	if packet, err = s.PacketParser(buff, secret, s.Dictionary); err != nil {
 		return
 	}
 
@@ -331,6 +332,9 @@ func (s *Server) receivePacket() (err error) {
 func (s *Server) ListenAndServe() (err error) {
 	if s.listener != nil {
 		return errors.New("radius: server already started")
+	}
+	if s.PacketParser == nil {
+		s.PacketParser = Parse
 	}
 
 	if s.Handler == nil {
